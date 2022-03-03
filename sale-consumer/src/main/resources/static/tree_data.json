@@ -1,0 +1,16 @@
+[{
+	"id":1,
+	"text":"图书管理",
+	"nodes":[
+		{
+			"id": 14,
+			"text": "查询",
+			"url": "/BookShow"
+		}
+	,{
+		"id":16,
+		"text":"回收站",
+                "url":"/page/deleteShow.jsp"
+	}
+	]
+}]

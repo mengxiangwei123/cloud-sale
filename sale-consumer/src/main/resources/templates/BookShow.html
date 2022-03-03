@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入bootstrap的css -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap3/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap3/css/bootstrap-theme.css}">
+    <!-- 必须先引入jquery的js -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- 引入bootstrap的js -->
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap3/js/bootstrap.js}"></script>
+
+    <!-- 引入table的css、js文件 -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap-table/bootstrap-table.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-table/bootstrap-table.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+    <!-- 引入表格的css、js文件 -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap-table/bootstrap-table.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-table/bootstrap-table.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+
+    <!-- 引入日期的css、js -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+    <!-- 引入bootbox的js -->
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-bootbox/bootbox.js}"></script>
+    <!-- 引入fileinput的css、js -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap-fileinput/css/fileinput.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-fileinput/js/fileinput.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-fileinput/js/locales/zh.js}"></script>
+
+
+    <!-- 引入treeview的css和js -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap-treeview/bootstrap-treeview.min.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-treeview/bootstrap-treeview.min.js}"></script>
+
+    <!-- 引入addTabs的css和js -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootStrap-addTabs/bootstrap.addtabs.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootStrap-addTabs/bootstrap.addtabs.min.js}"></script>
+
+
+    <!-- 引入bootbox的js -->
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-bootbox/bootbox.js}"></script>
+
+    <!-- 引入fileinput的css、js -->
+    <link rel="stylesheet" th:href="@{/js/bootstrap/bootstrap-fileinput/css/fileinput.css}">
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-fileinput/js/fileinput.js}"></script>
+    <script type="text/javascript" th:src="@{/js/bootstrap/bootstrap-fileinput/js/locales/zh.js}"></script>
+
+    <!-- 引入easyui的主js文件 -->
+    <script type="text/javascript" src="../js/jquery-easyui-1.5/jquery.easyui.min.js"></script>
+    <!-- 引入easyui的支持中文的js文件 -->
+    <script type="text/javascript" src="../js/jquery-easyui-1.5/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+<button  type="button" onclick="openAdd()" class="btn btn-success glyphicon glyphicon-plus">新增</button>
+<form class="form-inline">
+
+    <div class="form-group">
+        <label>一筐多查</label>
+        <input type="text" class="form-control" id="name">
+    </div>
+    <div class="form-group">
+        <label>直接查询</label>
+        <input type="text" class="form-control" id="sex" >
+    </div>
+
+    <button id="btn_add" onclick="searchUser()" type="button" class="btn  btn-success m-r-5">
+        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>搜索
+    </button>
+    <!-- 表格 -->
+    <table class="table" id="myTable"></table>
+</form>
+</body>
+<script>
+
+    $(function(){
+        queryStudentList();
+    })
+
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,//同步
+            success:function(data){//页面
+                res = data;
+            }
+        });
+        return res;
+    }
+
+    //打开新增弹框
+    function openAdd(){
+        //打开弹框
+        bootbox.dialog({
+            title:'新增用户',
+            message: createAddContent("/xlc/page/add"),
+            closeButton: true,//是否显示关闭按钮
+            buttons : {//自定义按钮
+                "success" : {//确定、保存
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {
+                        //保存数据
+                        $.ajax({
+                            url:'/xlc/testasd/add',
+                            type:'post',
+                            data:$("#myForm").serialize(),
+                            success:function(){
+                                //刷新表格
+                                $('#myTable').bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+                "cancel" : {//取消
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+    }
+
+    //单删
+    function deletePlay(id){
+        alert(id);
+        bootbox.confirm({
+            size: "small",
+            title: "提示",
+            buttons:{
+                confirm:{
+                    label:"确定",
+                    className:"btn-success"
+                },
+                cancel:{
+                    label:"取消",
+                    className:"btn-danger"
+                }
+            },
+            message: "是否确认删除？？？",
+            callback: function(result){
+                if(result){//确认删除
+                    $.ajax({
+                        url:"/xlc/testasd/del",
+                        type:"post",
+                        data:{id:id},
+                        success:function(){
+                            bootbox.alert({
+                                size: "small",
+                                title: "提示",
+                                message: "删除成功！！！"
+                            })
+                            //刷新表格：有条查调条查，，没有条查自己写refresh
+                            $('#myTable').bootstrapTable('refresh');
+                        }
+                    });
+                }
+            }
+        })
+    }
+
+    //打开修改弹框、回显
+    function updatePlay(id){
+        //打开弹框
+        bootbox.dialog({
+            title:'修改用户',
+            message: createAddContent("/xlc/page/add"),
+            closeButton: true,//是否显示关闭按钮
+            buttons : {//自定义按钮
+                "success" : {//确定、保存
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {
+                        //保存数据
+                        $.ajax({
+                            url:'/xlc/testasd/update',
+                            type:'post',
+                            data:$("#myForm").serialize(),
+                            success:function(){
+                                //刷新表格
+                                $('#myTable').bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+                "cancel" : {//取消
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+
+        //回显
+        $.ajax({
+            url:"/xlc/testasd/findByid?id="+id,
+            type:"get",
+            async:false,//同步
+            success:function(data){//userBean
+                //性别
+                $("input[name='sex']").each(function(){
+                    //js代码
+                    /* if(data.sex==this.value){
+                        this.checked=true;
+                    } */
+                    //jquery代码
+                    if(data.sex==$(this).val()){
+                        $(this).prop("checked",true);
+                    }
+                    //this？js对象？jquery对象--->js对象
+                });
+
+                //回显
+                $("#id").val(data.id);
+                $("#name").val(data.name);
+                $("#sex").val(data.sex);
+                $("#price").val(data.price);
+                $("#create_date").val(data.create_date);
+            }
+        });
+    }
+    //初始化用户列表
+    function queryStudentList(){
+        $('#myTable').bootstrapTable({
+            toolbar:'#toolbar',
+            url:'/querySale',
+            pagination:true, //是否展示分页
+            striped:true,//斑马线
+            queryParams:function(){
+                return {
+                    name:$("#name").val(),
+                    sex:$("#sex").val(),
+                };
+            },
+            columns:[
+                {field:"id",title:"id"},
+                {field:"name",title:"id"},
+                {field:"type",title:"店铺名称"},
+                {field:"scope",title:"店铺营业状态"},
+                {field:"statu",title:"店铺营业状态"},
+                {field:"date",title:"店铺营业状态"},
+                {field:"tool",title:"操作",formatter:function(value,row,index){
+                        var str = "<a class='btn btn-danger' role='button' href='javascript:deletePlay("+row.id+")'>删除</a>---"
+                        str += "<a class='btn btn-danger' role='button' href='javascript:updatePlay("+row.id+")'>修改</a>"
+                        return str;
+                    }}
+            ]
+        });
+    }
+    //搜索
+    function searchUser(){
+        $('#myTable').bootstrapTable("refresh");
+    }
+
+
+
+
+</script>
+</html>
